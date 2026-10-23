@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday, My Sweetheart! 💕</title>
+  
+  <!-- Google Fonts & Three.js Libraries -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe6eb 0%, #ffd0dc 50%, #ffb6c1 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Fireworks Canvas Background */
+    #fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Floating Hearts Background */
+    .bg-heart {
+      position: fixed;
+      color: rgba(255, 105, 180, 0.35);
+      font-size: 22px;
+      animation: floatUp 7s infinite linear;
+      z-index: 0;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+    }
+
+    /* Music Player Floating Bar */
+    .music-bar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 8px 18px;
+      border-radius: 30px;
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+      border: 1px solid #ffb6c1;
+    }
+
+    .music-btn {
+      background: #e91e63;
+      color: white;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 4px 10px rgba(233, 30, 99, 0.4);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+      background: #c2185b;
+    }
+
+    .music-info {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #ad1457;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .eq-bar {
+      width: 3px;
+      height: 12px;
+      background: #e91e63;
+      border-radius: 2px;
+      animation: eq 0.8s infinite alternate;
+      display: inline-block;
+    }
+    .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes eq {
+      0% { height: 4px; }
+      100% { height: 16px; }
+    }
+
+    /* Container Card */
+    .container {
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      z-index: 10;
+      padding: 20px 0;
+    }
+
+    .card-panel {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 28px;
+      padding: 30px 24px;
+      box-shadow: 0 15px 35px rgba(233, 30, 99, 0.18);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    h2 {
+      color: #c2185b;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .instruction {
+      font-size: 0.88rem;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    .btn-pink {
+      background: linear-gradient(45deg, #ff4081, #ff6b8b);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 5px 18px rgba(255, 64, 129, 0.4);
+      transition: all 0.25s ease;
+      margin-top: 18px;
+    }
+
+    .btn-pink:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(255, 64, 129, 0.6);
+    }
+
+    /* STEP 1: Envelope */
+    .envelope-wrapper {
+      position: relative;
+      width: 210px;
+      height: 145px;
+      background: #ff8da1;
+      margin: 35px auto 25px;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-left: 105px solid transparent;
+      border-right: 105px solid transparent;
+      border-top: 85px solid #ff6b8b;
+      transform-origin: top;
+      transition: transform 0.6s ease;
+      z-index: 2;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 62px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 42px;
+      height: 42px;
+      background: #e91e63;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      z-index: 3;
+    }
+
+    .envelope-wrapper.open .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    /* STEP 2: Diary Card */
+    .diary-box {
+      background: #fff0f3;
+      border: 2px dashed #ff8da1;
+      border-radius: 20px;
+      padding: 24px;
+      text-align: left;
+      color: #333;
+    }
+
+    .diary-box h3 {
+      color: #d81b60;
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .diary-box p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    /* STEP 3: Photo Stack */
+    .photo-stack {
+      position: relative;
+      width: 220px;
+      height: 270px;
+      margin: 20px auto 10px;
+    }
+
+    .photo-card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: white;
+      padding: 12px 12px 45px;
+      border-radius: 14px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+      cursor: pointer;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      user-select: none;
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 185px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .photo-card .caption {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #444;
+    }
+
+    /* STEP 4 & 6: 3D Canvas Containers */
+    .canvas-3d-container {
+      width: 100%;
+      height: 280px;
+      margin: 10px 0;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* STEP 5: Wishes Grid */
+    .bubbles-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .bubble {
+      background: linear-gradient(135deg, #ffffff, #ffe0e8);
+      border: 1px solid #ffb6c1;
+      padding: 10px 18px;
+      border-radius: 25px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #e91e63;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.25s ease;
+    }
+
+    .bubble:hover {
+      transform: scale(1.08);
+      background: #ff4081;
+      color: white;
+    }
+
+    .bubble.popped {
+      opacity: 0.35;
+      transform: scale(0.85);
+      pointer-events: none;
+    }
+
+    .wish-message {
+      min-height: 55px;
+      padding: 12px;
+      font-size: 0.92rem;
+      color: #d81b60;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* STEP 6: Gift Box Animation */
+    .gift-box {
+      font-size: 80px;
+      cursor: pointer;
+      margin: 25px 0;
+      animation: bounce 1.4s infinite;
+      display: inline-block;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fireworks Canvas -->
+  <canvas id="fireworksCanvas"></canvas>
+
+  <!-- Background Floating Hearts -->
+  <div id="hearts-bg"></div>
+
+  <!-- Music Floating Controls -->
+  <div class="music-bar">
+    <button class="music-btn" id="musicToggleBtn" onclick="toggleMusic()">▶</button>
+    <div class="music-info">
+      <span>Piano Music</span>
+      <div id="eqBars" style="display:none;">
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+        <span class="eq-bar"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    
+    <!-- STEP 1: ENVELOPE -->
+    <div id="step-1" class="card-panel">
+      <h2>Invitation</h2>
+      <p class="instruction">Tap the wax seal to open the letter...</p>
+      <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+        <div class="envelope-flap"></div>
+        <div class="wax-seal">💌</div>
+      </div>
+      <button id="btn-envelope" class="btn-pink hidden" onclick="nextStep(2)">Open Card →</button>
+    </div>
+
+    <!-- STEP 2: SECRET DIARY -->
+    <div id="step-2" class="card-panel hidden">
+      <h2>My Secret Diary 📖</h2>
+      <p class="instruction">A special birthday message for you...</p>
+      <div class="diary-box">
+        <h3>Dearest Sweetheart,</h3>
+        <p>Every single moment spent with you feels like a dream. Your beautiful smile brightens my darkest days, and your happiness means everything to me.</p>
+        <br/>
+        <p>On this special day, I hope all your dreams come true. Happy Birthday!</p>
+        <p style="text-align: right; margin-top: 12px; font-weight: bold; color: #e91e63;">Love always, ❤️</p>
+      </div>
+      <button class="btn-pink" onclick="nextStep(3)">See Our Memories →</button>
+    </div>
+
+    <!-- STEP 3: MEMORIES PHOTO STACK -->
+    <div id="step-3" class="card-panel hidden">
+      <h2>Our Memories 📸</h2>
+      <p class="instruction">Tap top photo to cycle through moments!</p>
+      
+      <div class="photo-stack" id="photo-stack">
+        <div class="photo-card" style="transform: rotate(-3deg);" onclick="dismissCard(this)">
+          <img src="myphoto1.jpg" alt="Memory 1">
+          <div class="caption">Best Days Together 🌸</div>
+        </div>
+        <div class="photo-card" style="transform: rotate(4deg);" onclick="dismissCard(this)">
+          <img src="myphoto2.jpg" alt="Memory 2">
+          <div class="caption">Sweet Moments 💕</div>
+        </div>
+        <div class="photo-card" style="transform: rotate(-1deg);" onclick="dismissCard(this)">
+          <img src="myphoto3.jpg" alt="Memory 3">
+          <div class="caption">Always Smiling ✨</div>
+        </div>
+      </div>
+
+      <button class="btn-pink" onclick="nextStep(4)">Time for Cake! 🎂</button>
+    </div>
+
+    <!-- STEP 4: 3D REALISTIC CAKE -->
+    <div id="step-4" class="card-panel hidden">
+      <h2>Time for Cake! 🎂</h2>
+      <p class="instruction">Tap the cake candle to blow it out!</p>
+      
+      <div id="cake3dContainer" class="canvas-3d-container" onclick="blowCandle()"></div>
+
+      <p id="cake-status" style="font-weight: 600; color: #e91e63; margin-top: 5px;">Tap the candle to blow out the flame!</p>
+      <button id="btn-cake" class="btn-pink hidden" onclick="nextStep(5)">Make Wishes →</button>
+    </div>
+
+    <!-- STEP 5: FLOATING WISHES -->
+    <div id="step-5" class="card-panel hidden">
+      <h2>Floating Wishes ✨</h2>
+      <p class="instruction">Tap wish bubbles to reveal blessings!</p>
+      
+      <div class="bubbles-grid">
+        <div class="bubble" onclick="popWish(this, 'May your year be filled with endless joy & laughter! 😄')">Stay Happy</div>
+        <div class="bubble" onclick="popWish(this, 'Wishing you wonderful health and vibrant energy always! 💪')">Stay Healthy</div>
+        <div class="bubble" onclick="popWish(this, 'May all your biggest dreams and goals come true! 🌟')">Dream Big</div>
+        <div class="bubble" onclick="popWish(this, 'Success and prosperity in everything you do! 🚀')">Be Successful</div>
+        <div class="bubble" onclick="popWish(this, 'May you always feel cherished, valued, and loved! ❤️')">Always Loved</div>
+      </div>
+
+      <div class="wish-message" id="wish-display">Tap a wish bubble above!</div>
+
+      <button class="btn-pink" onclick="nextStep(6)">Open Your Gift 🎁</button>
+    </div>
+
+    <!-- STEP 6: GIFT & REALISTIC 3D BOUQUET -->
+    <div id="step-6" class="card-panel hidden">
+      <h2>One More Thing... 🎁</h2>
+      <p class="instruction">Tap the box to open your surprise!</p>
+      
+      <div class="gift-box" id="gift" onclick="openGift()">🎁</div>
+
+      <div id="gift-content" class="hidden">
+        <h3 style="color: #e91e63; margin-bottom: 8px;">A Bouquet of Blue Flowers💙</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">(Drag to rotate bouquet in 3D!)</p>
+        
+        <div id="bouquet3dContainer" class="canvas-3d-container"></div>
+
+        <button class="btn-pink" onclick="triggerFireworks(30); nextStep(1);">Celebrate Again 🎉</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* =========================================================================
+       1. FLOATING HEARTS & FIREWORKS ENGINE
+       ========================================================================= */
+    const bgContainer = document.getElementById('hearts-bg');
+    for (let i = 0; i < 22; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('bg-heart');
+      heart.innerHTML = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+      heart.style.animationDelay = Math.random() * 5 + 's';
+      bgContainer.appendChild(heart);
+    }
+
+    const fwCanvas = document.getElementById('fireworksCanvas');
+    const fwCtx = fwCanvas.getContext('2d');
+    let particles = [];
+
+    function resizeFwCanvas() {
+      fwCanvas.width = window.innerWidth;
+      fwCanvas.height = window.innerHeight;
+    }
+    resizeFwCanvas();
+    window.addEventListener('resize', resizeFwCanvas);
+
+    function triggerFireworks(count = 20) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const x = Math.random() * fwCanvas.width;
+          const y = Math.random() * (fwCanvas.height * 0.6);
+          const color = `hsl(${Math.random() * 360}, 100%, 65%)`;
+          for (let p = 0; p < 45; p++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 5 + 2;
+            particles.push({
+              x: x, y: y,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              alpha: 1,
+              color: color
+            });
+          }
+        }, i * 150);
+      }
+    }
+
+    function renderFireworks() {
+      fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05; // gravity
+        p.alpha -= 0.015;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+        } else {
+          fwCtx.globalAlpha = p.alpha;
+          fwCtx.fillStyle = p.color;
+          fwCtx.beginPath();
+          fwCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          fwCtx.fill();
+        }
+      }
+      requestAnimationFrame(renderFireworks);
+    }
+    renderFireworks();
+
+    /* =========================================================================
+       2. PIANO MUSIC SYNTHESIZER (Happy Birthday)
+       ========================================================================= */
+    let audioCtx = null;
+    let isPlaying = false;
+    let musicTimeout = null;
+
+    const notes = [
+      { note: 'G4', duration: 0.35 }, { note: 'G4', duration: 0.2 }, { note: 'A4', duration: 0.5 }, { note: 'G4', duration: 0.5 }, { note: 'C5', duration: 0.5 }, { note: 'B4', duration: 0.9 },
+      { note: 'G4', duration: 0.35 }, { note: 'G4', duration: 0.2 }, { note: 'A4', duration: 0.5 }, { note: 'G4', duration: 0.5 }, { note: 'D5', duration: 0.5 }, { note: 'C5', duration: 0.9 },
+      { note: 'G4', duration: 0.35 }, { note: 'G4', duration: 0.2 }, { note: 'G5', duration: 0.5 }, { note: 'E5', duration: 0.5 }, { note: 'C5', duration: 0.5 }, { note: 'B4', duration: 0.5 }, { note: 'A4', duration: 0.8 },
+      { note: 'F5', duration: 0.35 }, { note: 'F5', duration: 0.2 }, { note: 'E5', duration: 0.5 }, { note: 'C5', duration: 0.5 }, { note: 'D5', duration: 0.5 }, { note: 'C5', duration: 1.1 }
+    ];
+
+    const freqMap = {
+      'G4': 392.00, 'A4': 440.00, 'B4': 493.88,
+      'C5': 523.25, 'D5': 587.33, 'E5': 659.25,
+      'F5': 698.46, 'G5': 783.99
+    };
+
+    function playPianoNote(freq, duration) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      gain.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration + 0.3);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration + 0.3);
+    }
+
+    function playSequence(index = 0) {
+      if (!isPlaying) return;
+      if (index >= notes.length) index = 0;
+
+      const current = notes[index];
+      playPianoNote(freqMap[current.note], current.duration);
+
+      musicTimeout = setTimeout(() => {
+        if (isPlaying) playSequence(index + 1);
+      }, (current.duration + 0.15) * 1000);
+    }
+
+    function toggleMusic() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('musicToggleBtn');
+      const eq = document.getElementById('eqBars');
+
+      if (isPlaying) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        btn.innerText = '❚❚';
+        eq.style.display = 'inline-flex';
+        playSequence(0);
+      } else {
+        btn.innerText = '▶';
+        eq.style.display = 'none';
+        clearTimeout(musicTimeout);
+      }
+    }
+
+    /* =========================================================================
+       3. STEP NAVIGATION & INTERACTIVE HANDLERS
+       ========================================================================= */
+    function nextStep(stepNumber) {
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById(`step-${i}`).classList.add('hidden');
+      }
+      document.getElementById(`step-${stepNumber}`).classList.remove('hidden');
+
+      if (stepNumber === 4 && !cakeSceneInitialized) {
+        init3DCake();
+      }
+      if (stepNumber === 6 && giftOpened && !bouquetInitialized) {
+        init3DBouquet();
+      }
+    }
+
+    function openEnvelope() {
+      document.getElementById('envelope').classList.add('open');
+      setTimeout(() => {
+        document.getElementById('btn-envelope').classList.remove('hidden');
+      }, 500);
+      if (!isPlaying) toggleMusic();
+    }
+
+    function dismissCard(card) {
+      card.style.transform = 'translateY(-120%) rotate(20deg)';
+      card.style.opacity = '0';
+      setTimeout(() => {
+        card.parentNode.appendChild(card);
+        card.style.transform = 'rotate(' + (Math.random() * 8 - 4) + 'deg)';
+        card.style.opacity = '1';
+      }, 350);
+    }
+
+    function popWish(el, msg) {
+      el.classList.add('popped');
+      document.getElementById('wish-display').innerText = msg;
+    }
+
+    let giftOpened = false;
+    function openGift() {
+      if (giftOpened) return;
+      giftOpened = true;
+      document.getElementById('gift').style.display = 'none';
+      document.getElementById('gift-content').classList.remove('hidden');
+      triggerFireworks(25);
+      setTimeout(() => {
+        init3DBouquet();
+      }, 100);
+    }
+
+    /* =========================================================================
+       4. THREE.JS REALISTIC 3D CAKE & CANDLE
+       ========================================================================= */
+    let cakeSceneInitialized = false;
+    let cakeFlameMesh, cakeFlameLight;
+    let candleBlown = false;
+
+    function init3DCake() {
+      cakeSceneInitialized = true;
+      const container = document.getElementById('cake3dContainer');
+      const scene = new THREE.Scene();
+
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.set(0, 3.5, 7);
+      camera.lookAt(0, 0, 0);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.shadowMap.enabled = true;
+      container.appendChild(renderer.domElement);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xfff0f5, 1.1);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+      dirLight.position.set(5, 10, 7);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      const cakeGroup = new THREE.Group();
+
+      // Plate
+      const plateGeo = new THREE.CylinderGeometry(2.3, 2.1, 0.12, 40);
+      const plateMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+      const plate = new THREE.Mesh(plateGeo, plateMat);
+      plate.position.y = -0.06;
+      cakeGroup.add(plate);
+
+      // Bottom Cake Layer
+      const layer1Geo = new THREE.CylinderGeometry(1.8, 1.8, 1.1, 40);
+      const layer1Mat = new THREE.MeshStandardMaterial({ color: 0xff8da1, roughness: 0.4 });
+      const layer1 = new THREE.Mesh(layer1Geo, layer1Mat);
+      layer1.position.y = 0.55;
+      cakeGroup.add(layer1);
+
+      // White Cream Middle
+      const creamGeo = new THREE.CylinderGeometry(1.82, 1.82, 0.12, 40);
+      const creamMat = new THREE.MeshStandardMaterial({ color: 0xfff0f5, roughness: 0.3 });
+      const cream = new THREE.Mesh(creamGeo, creamMat);
+      cream.position.y = 1.15;
+      cakeGroup.add(cream);
+
+      // Top Cake Layer
+      const layer2Geo = new THREE.CylinderGeometry(1.2, 1.2, 0.9, 40);
+      const layer2Mat = new THREE.MeshStandardMaterial({ color: 0xff6b8b, roughness: 0.4 });
+      const layer2 = new THREE.Mesh(layer2Geo, layer2Mat);
+      layer2.position.y = 1.6;
+      cakeGroup.add(layer2);
+
+      // Candle
+      const candleGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.7, 20);
+      const candleMat = new THREE.MeshStandardMaterial({ color: 0xffeb3b });
+      const candle = new THREE.Mesh(candleGeo, candleMat);
+      candle.position.y = 2.4;
+      cakeGroup.add(candle);
+
+      // Candle Flame
+      const flameGeo = new THREE.ConeGeometry(0.09, 0.25, 16);
+      const flameMat = new THREE.MeshBasicMaterial({ color: 0xff9800 });
+      cakeFlameMesh = new THREE.Mesh(flameGeo, flameMat);
+      cakeFlameMesh.position.y = 2.85;
+      cakeGroup.add(cakeFlameMesh);
+
+      cakeFlameLight = new THREE.PointLight(0xff9800, 1.5, 3);
+      cakeFlameLight.position.y = 2.85;
+      cakeGroup.add(cakeFlameLight);
+
+      scene.add(cakeGroup);
+
+      // Drag to rotate logic
+      let isDragging = false, prevMouseX = 0;
+      container.addEventListener('mousedown', (e) => { isDragging = true; prevMouseX = e.clientX; });
+      window.addEventListener('mouseup', () => isDragging = false);
+      container.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          cakeGroup.rotation.y += (e.clientX - prevMouseX) * 0.01;
+          prevMouseX = e.clientX;
+        }
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!isDragging) cakeGroup.rotation.y += 0.005;
+        if (!candleBlown && cakeFlameMesh) {
+          cakeFlameMesh.scale.setScalar(1 + Math.sin(Date.now() * 0.01) * 0.15);
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    function blowCandle() {
+      if (candleBlown) return;
+      candleBlown = true;
+      if (cakeFlameMesh) cakeFlameMesh.visible = false;
+      if (cakeFlameLight) cakeFlameLight.intensity = 0;
+
+      document.getElementById('cake-status').innerText = "Candle blown out! Make a wish! 🌟";
+      document.getElementById('btn-cake').classList.remove('hidden');
+      triggerFireworks(15);
+    }
+
+    /* =========================================================================
+       5. THREE.JS REALISTIC 3D BLUE ROSES & TULIPS BOUQUET
+       ========================================================================= */
+    let bouquetInitialized = false;
+
+    function init3DBouquet() {
+      bouquetInitialized = true;
+      const container = document.getElementById('bouquet3dContainer');
+      const scene = new THREE.Scene();
+
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.set(0, 1, 7.5);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(renderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.1);
+      dirLight.position.set(5, 8, 6);
+      scene.add(dirLight);
+
+      const bouquetGroup = new THREE.Group();
+
+      // Flower Materials
+      const blueRoseMat = new THREE.MeshStandardMaterial({ color: 0x1e88e5, roughness: 0.35 });
+      const darkBlueRoseMat = new THREE.MeshStandardMaterial({ color: 0x1565c0, roughness: 0.35 });
+      const tulipMat = new THREE.MeshStandardMaterial({ color: 0x42a5f5, roughness: 0.3 });
+      const stemMat = new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.5 });
+      const leafMat = new THREE.MeshStandardMaterial({ color: 0x388e3c, roughness: 0.4 });
+      const wrapMat = new THREE.MeshStandardMaterial({ color: 0xfce4ec, roughness: 0.6 });
+      const ribbonMat = new THREE.MeshStandardMaterial({ color: 0x0d47a1, roughness: 0.2 });
+
+      // Build 3D Realistic Rose
+      function createRose(isDark = false) {
+        const rose = new THREE.Group();
+        const mat = isDark ? darkBlueRoseMat : blueRoseMat;
+
+        // Center Bud
+        const bud = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), mat);
+        rose.add(bud);
+
+        // Layered Petals
+        for (let layer = 0; layer < 3; layer++) {
+          const petalCount = 5 + layer * 2;
+          const radius = 0.18 + layer * 0.08;
+          for (let i = 0; i < petalCount; i++) {
+            const angle = (i / petalCount) * Math.PI * 2 + (layer * 0.3);
+            const petal = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 12), mat);
+            petal.scale.set(1, 0.4, 1.3);
+            petal.position.set(Math.cos(angle) * radius, layer * 0.04, Math.sin(angle) * radius);
+            petal.rotation.y = -angle;
+            petal.rotation.x = 0.5 + layer * 0.2;
+            rose.add(petal);
+          }
+        }
+        return rose;
+      }
+
+      // Build 3D Realistic Tulip
+      function createTulip() {
+        const tulip = new THREE.Group();
+        const petalCount = 6;
+        for (let i = 0; i < petalCount; i++) {
+          const angle = (i / petalCount) * Math.PI * 2;
+          const petal = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.18, 0.5, 12), tulipMat);
+          petal.position.set(Math.cos(angle) * 0.12, 0.2, Math.sin(angle) * 0.12);
+          petal.rotation.z = Math.sin(angle) * 0.2;
+          petal.rotation.x = Math.cos(angle) * 0.2;
+          tulip.add(petal);
+        }
+        return tulip;
+      }
+
+      // Build Stem with Leaf
+      function createStem(height = 2.2) {
+        const group = new THREE.Group();
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, height, 12), stemMat);
+        stem.position.y = -height / 2;
+        group.add(stem);
+
+        const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.6, 12), leafMat);
+        leaf.position.set(0.1, -height / 3, 0);
+        leaf.rotation.z = -0.6;
+        group.add(leaf);
+
+        return group;
+      }
+
+      // Arrange Bouquet (Roses + Tulips)
+      const positions = [
+        { x: 0, y: 0.8, z: 0, type: 'rose', dark: false },
+        { x: -0.5, y: 0.6, z: 0.3, type: 'tulip' },
+        { x: 0.5, y: 0.65, z: 0.3, type: 'rose', dark: true },
+        { x: -0.4, y: 0.7, z: -0.3, type: 'rose', dark: false },
+        { x: 0.4, y: 0.75, z: -0.3, type: 'tulip' },
+        { x: 0, y: 0.5, z: 0.6, type: 'rose', dark: true }
+      ];
+
+      positions.forEach(p => {
+        const flowerGroup = new THREE.Group();
+        flowerGroup.position.set(p.x, p.y, p.z);
+
+        const flower = (p.type === 'rose') ? createRose(p.dark) : createTulip();
+        const stem = createStem(2.2);
+
+        flowerGroup.add(flower);
+        flowerGroup.add(stem);
+        bouquetGroup.add(flowerGroup);
+      });
+
+      // Wrapping Paper Cone
+      const wrapGeo = new THREE.ConeGeometry(1.2, 2.2, 32, 1, true);
+      const wrap = new THREE.Mesh(wrapGeo, wrapMat);
+      wrap.position.y = -0.4;
+      wrap.rotation.x = Math.PI;
+      bouquetGroup.add(wrap);
+
+      // Ribbon Bow
+      const ribbonGeo = new THREE.TorusGeometry(0.35, 0.06, 16, 32);
+      const ribbon = new THREE.Mesh(ribbonGeo, ribbonMat);
+      ribbon.position.set(0, -0.4, 0.55);
+      bouquetGroup.add(ribbon);
+
+      bouquetGroup.position.y = -0.2;
+      scene.add(bouquetGroup);
+
+      // Drag Rotation
+      let isDragging = false, prevMouseX = 0;
+      container.addEventListener('mousedown', (e) => { isDragging = true; prevMouseX = e.clientX; });
+      window.addEventListener('mouseup', () => isDragging = false);
+      container.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          bouquetGroup.rotation.y += (e.clientX - prevMouseX) * 0.01;
+          prevMouseX = e.clientX;
+        }
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!isDragging) bouquetGroup.rotation.y += 0.006;
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+  </script>
+</body>
+</html>
